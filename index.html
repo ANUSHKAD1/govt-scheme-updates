@@ -1,0 +1,123 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Schemes Portal</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Government Schemes Portal</h1>
+
+    <label for="scheme-select">Choose Scheme Category:</label>
+    <select id="scheme-select">
+      <option value="">-- Select --</option>
+      <option value="central">Central Schemes</option>
+      <option value="karnataka">Karnataka Schemes</option>
+    </select>
+
+    <div id="schemes-container"></div>
+  </div>
+
+  <script>
+    const select = document.getElementById("scheme-select");
+    const container = document.getElementById("schemes-container");
+
+    select.addEventListener("change", async () => {
+      const choice = select.value;
+      container.innerHTML = "";
+
+      if (!choice) return;
+
+      try {
+        const res = await fetch(`/schemes/${choice}`);
+        const data = await res.json();
+
+        if (choice === "central") {
+          renderCentralSchemes(data.schemes);
+        } else {
+          renderKarnatakaSchemes(data.schemes);
+        }
+      } catch (err) {
+        container.innerHTML = `<p class="error">Error fetching data.</p>`;
+      }
+    });
+
+    function renderCentralSchemes(schemes) {
+      if (!schemes.length) {
+        container.innerHTML = "<p>No schemes found.</p>";
+        return;
+      }
+      const list = document.createElement("ul");
+      schemes.forEach(s => {
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="${s.link}" target="_blank">${s.title}</a> <span class="date">${s.date}</span>`;
+        list.appendChild(li);
+      });
+      container.appendChild(list);
+    }
+
+    function renderKarnatakaSchemes(schemes) {
+      if (!schemes.length) {
+        container.innerHTML = "<p>No schemes found.</p>";
+        return;
+      }
+      const buildList = (items) => {
+        const ul = document.createElement("ul");
+        items.forEach(s => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="${s.link}" target="_blank">${s.title}</a>`;
+          if (s.children && s.children.length) {
+            li.appendChild(buildList(s.children));
+          }
+          ul.appendChild(li);
+        });
+        return ul;
+      };
+      container.appendChild(buildList(schemes));
+    }
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Government Schemes</title>
+</head>
+<body>
+    <h1>Government Schemes</h1>
+
+    <select id="schemeType" onchange="loadSchemes()">
+        <option value="central">Central Schemes</option>
+        <option value="karnataka">Karnataka Schemes</option>
+    </select>
+
+    <ul id="schemeList"></ul>
+
+    <script>
+        async function loadSchemes() {
+            const type = document.getElementById("schemeType").value;
+            const response = await fetch(`/schemes/${type}`);
+            const schemes = await response.json();
+
+            const list = document.getElementById("schemeList");
+            list.innerHTML = "";
+
+            schemes.forEach(scheme => {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.href = scheme.url;       // ✅ Use the URL
+                a.textContent = scheme.title; // ✅ Display scheme title
+                a.target = "_blank";       // ✅ Open in new tab
+                li.appendChild(a);
+                list.appendChild(li);
+            });
+        }
+
+        // Load default on startup
+        loadSchemes();
+    </script>
+</body>
+</html>
